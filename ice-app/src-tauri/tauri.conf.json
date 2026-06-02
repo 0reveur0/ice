@@ -1,0 +1,32 @@
+
+{
+  "build": {
+    "beforeDevCommand": "npm run dev --prefix ../app",
+    "beforeBuildCommand": "npm run build --prefix ../app",
+    "devPath": "http://localhost:1420",
+    "distDir": "../app/dist"
+  },
+  "package": {
+    "productName": "ice",
+    "version": "1.0.0"
+  },
+  "tauri": {
+    "bundle": {
+      "active": true,
+      "identifier": "com.ice.app",
+      "targets": "all"
+    },
+    "security": {
+      "csp": null
+    },
+    "windows": [
+      {
+        "fullscreen": false,
+        "resizable": true,
+        "title": "Ice",
+        "width": 800,
+        "height": 600
+      }
+    ]
+  }
+}
