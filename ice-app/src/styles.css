@@ -1,0 +1,28 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Ice - Light Mode Palette */
+  --background: #F9FBFC; /* Icy Stone Gray */
+  --text: #2D3748; /* Charcoal */
+  --primary: #1A5FB4; /* Deep Ice Blue */
+  --border: #E2E8F0; /* Mist Gray */
+  --card-background: rgba(255, 255, 255, 0.5);
+}
+
+[data-theme='dark'] {
+  /* Ice - Dark Mode Palette */
+  --background: #0D1520; /* Frozen Ocean Deep */
+  --text: #E2E8F0; /* Light Gray for readability */
+  --primary: #2A75D3; /* A slightly brighter blue for contrast */
+  --border: #2D3748; /* Darker border */
+  --card-background: rgba(13, 21, 32, 0.5);
+}
+
+body {
+  font-family: 'Inter', sans-serif; /* Using Inter as a clean, modern sans-serif font */
+  background-color: var(--background);
+  color: var(--text);
+  line-height: 1.6;
+}

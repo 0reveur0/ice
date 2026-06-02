@@ -1,37 +1,29 @@
+/*
+-- ==================================================================
+-- SCHEMA FOR THE ICE PRODUCTIVITY APP
+-- ==================================================================
+*/
 
--- =================================================================
--- Schema for Ice Application - Version 1.0.0
--- Designed for Scalability and Offline-First Performance.
--- =================================================================
-
--- Settings Table: A key-value store for application settings like themes.
-CREATE TABLE settings (
-    key TEXT PRIMARY KEY NOT NULL,
-    value TEXT
-);
-
--- Tasks Table: The core of the productivity features.
-CREATE TABLE tasks (
+-- Main table for tasks
+CREATE TABLE IF NOT EXISTS tasks (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     title TEXT NOT NULL,
     description TEXT,
-    status TEXT NOT NULL DEFAULT 'todo', -- e.g., 'todo', 'inprogress', 'done', 'kanban_column_name'
-    priority INTEGER NOT NULL DEFAULT 3, -- Eisenhower Matrix: 1 (Urgent & Important), 2 (Important), 3 (Urgent), 4 (Neither)
-    start_date TEXT, -- ISO 8601 format: YYYY-MM-DD
-    end_date TEXT,   -- ISO 8601 format: YYYY-MM-DD
-    pomodoro_sessions_completed INTEGER NOT NULL DEFAULT 0,
-    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+    status TEXT NOT NULL DEFAULT 'pending', -- e.g., 'pending', 'in_progress', 'completed'
+    due_date TEXT, -- ISO 8601 format: YYYY-MM-DDTHH:MM:SSZ
+    priority INTEGER, -- e.g., 1 (low) to 5 (high)
+    created_at TEXT NOT NULL, -- ISO 8601 format
+    updated_at TEXT NOT NULL -- ISO 8601 format
 );
 
--- Tags Table: For organizing tasks.
-CREATE TABLE tags (
+-- Table for tags
+CREATE TABLE IF NOT EXISTS tags (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL UNIQUE
 );
 
--- Task_Tags Junction Table: Many-to-many relationship between tasks and tags.
-CREATE TABLE task_tags (
+-- Junction table for many-to-many relationship between tasks and tags
+CREATE TABLE IF NOT EXISTS task_tags (
     task_id INTEGER NOT NULL,
     tag_id INTEGER NOT NULL,
     PRIMARY KEY (task_id, tag_id),
@@ -39,54 +31,28 @@ CREATE TABLE task_tags (
     FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE
 );
 
--- Habits Table: Definitions of habits to track.
-CREATE TABLE habits (
+-- ==================================================================
+-- POWERFUL REMINDER SYSTEM SCHEMA
+-- ==================================================================
+
+-- Table to store individual reminders linked to a task
+CREATE TABLE IF NOT EXISTS reminders (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL UNIQUE,
-    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+    task_id INTEGER NOT NULL,
+    remind_at TEXT NOT NULL, -- Specific time for the reminder, e.g., '2024-08-15T09:00:00Z'
+    is_constant BOOLEAN NOT NULL DEFAULT 0, -- If 1, use an "always-on-top" window instead of a simple notification
+    wifi_ssid_trigger TEXT, -- Optional: Trigger only when connected to this specific Wifi SSID
+    created_at TEXT NOT NULL, -- ISO 8601 format
+    FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE
 );
 
--- Habit Completions Table: Log of daily habit completions.
-CREATE TABLE habit_completions (
+-- Table to define recurrence rules for reminders
+CREATE TABLE IF NOT EXISTS recurrence_rules (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    habit_id INTEGER NOT NULL,
-    completion_date TEXT NOT NULL, -- ISO 8601 format: YYYY-MM-DD
-    UNIQUE(habit_id, completion_date),
-    FOREIGN KEY (habit_id) REFERENCES habits(id) ON DELETE CASCADE
+    reminder_id INTEGER NOT NULL,
+    recurrence_type TEXT NOT NULL, -- 'DAILY', 'WEEKLY', 'MONTHLY', 'CRON'
+    rule_definition TEXT NOT NULL, -- For 'WEEKLY': 'MON,TUE', For 'MONTHLY': '1,15', For 'CRON': '0 9 * * *'
+    start_date TEXT NOT NULL, -- ISO 8601 format
+    end_date TEXT, -- Optional: ISO 8601 format
+    FOREIGN KEY (reminder_id) REFERENCES reminders(id) ON DELETE CASCADE
 );
-
--- Music Tracks Table: For the study music player.
-CREATE TABLE music_tracks (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    title TEXT NOT NULL,
-    youtube_id TEXT NOT NULL UNIQUE,
-    channel_name TEXT
-);
-
--- Countdown Events Table: For user-defined events and holidays.
-CREATE TABLE countdown_events (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
-    event_date TEXT NOT NULL, -- ISO 8601 format: YYYY-MM-DD
-    is_holiday INTEGER NOT NULL DEFAULT 0 -- Boolean: 0 for user event, 1 for fixed holiday
-);
-
--- Sticky Notes Table: For on-screen notes.
-CREATE TABLE sticky_notes (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    content TEXT,
-    color TEXT DEFAULT '#ffeb3b', -- Default yellow color
-    pos_x REAL NOT NULL DEFAULT 0,
-    pos_y REAL NOT NULL DEFAULT 0,
-    width REAL NOT NULL DEFAULT 250,
-    height REAL NOT NULL DEFAULT 250,
-    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
-
--- =================================================================
--- Seeding default data
--- =================================================================
-
--- Default theme setting
-INSERT INTO settings (key, value) VALUES ('theme', 'default_dark');
