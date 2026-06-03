@@ -1,10 +1,9 @@
-
 {
   "build": {
-    "beforeDevCommand": "npm run dev",
-    "beforeBuildCommand": "npm run build",
+    "beforeDevCommand": "npm run dev --prefix ../app",
+    "beforeBuildCommand": "npm run build --prefix ../app",
     "devPath": "http://localhost:1420",
-    "distDir": "../dist"
+    "distDir": "../app/dist"
   },
   "package": {
     "productName": "ice",

@@ -1,2 +1,2 @@
 cd ice-app
-npx @tauri-apps/cli dev
+npx tauri dev
