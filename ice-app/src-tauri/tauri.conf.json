@@ -1,20 +1,27 @@
 
 {
   "build": {
-    "beforeDevCommand": "npm run dev --prefix ../app",
-    "beforeBuildCommand": "npm run build --prefix ../app",
+    "beforeDevCommand": "npm run dev",
+    "beforeBuildCommand": "npm run build",
     "devPath": "http://localhost:1420",
-    "distDir": "../app/dist"
+    "distDir": "../dist"
   },
   "package": {
     "productName": "ice",
-    "version": "1.0.0"
+    "version": "0.0.0"
   },
   "tauri": {
+    "allowlist": {
+      "all": false,
+      "shell": {
+        "all": false,
+        "open": true
+      }
+    },
     "bundle": {
       "active": true,
-      "identifier": "com.ice.app",
-      "targets": "all"
+      "targets": "all",
+      "identifier": "com.ice.app"
     },
     "security": {
       "csp": null
@@ -23,7 +30,7 @@
       {
         "fullscreen": false,
         "resizable": true,
-        "title": "Ice",
+        "title": "ice",
         "width": 800,
         "height": 600
       }
